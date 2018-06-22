@@ -1,0 +1,9 @@
+ {
+      "blueprint" : "BigSQLBlueprint",
+      "default_password" : "passw0rd",
+      "host_groups" :[
+ADD_NODE_1
+ADD_NODE_2
+ADD_NODE_3
+      ]
+ }

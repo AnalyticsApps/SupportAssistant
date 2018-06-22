@@ -1,0 +1,126 @@
+{#
+ # Licensed to the Apache Software Foundation (ASF) under one
+ # or more contributor license agreements.  See the NOTICE file
+ # distributed with this work for additional information
+ # regarding copyright ownership.  The ASF licenses this file
+ # to you under the Apache License, Version 2.0 (the
+ # "License"); you may not use this file except in compliance
+ # with the License.  You may obtain a copy of the License at
+ #
+ #   http://www.apache.org/licenses/LICENSE-2.0
+ #
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ #}
+{
+  "input":[
+    {
+      "type":"bigsql_server",
+      "rowtype":"service",
+      "tail":"false",
+      "path":"/opt/LogSearchExt/logs/var/ibm/bigsql/logs/bigsql.log*"
+    },
+    {
+      "type":"bigsql_scheduler",
+      "rowtype":"service",
+      "tail":"false",
+      "path":"/opt/LogSearchExt/logs/var/ibm/bigsql/logs/bigsql-sched.log*"
+    },
+    {
+      "type":"bigsql_engine",
+      "rowtype":"service",
+      "tail":"false",
+      "path":"/opt/LogSearchExt/logs/var/ibm/bigsql/diag/DIAG*/db2diag*.log"
+    }
+  ],
+  "filter":[
+    {
+      "filter":"grok",
+      "conditions":{
+        "fields":{
+          "type":[
+            "bigsql_server",
+            "bigsql_scheduler"
+          ]
+
+        }
+
+      },
+      "log4j_format":"%d{ISO8601} %p %c [%t] : %m%n",
+      "multiline_pattern":"^(%{TIMESTAMP_ISO8601:logtime})",
+      "message_pattern":"(?m)^%{TIMESTAMP_ISO8601:logtime}%{SPACE}%{LOGLEVEL:level}%{SPACE}%{JAVACLASS:logger_name}%{SPACE}\\[%{DATA:thread_name}\\]%{SPACE}:%{SPACE}%{GREEDYDATA:log_message}",
+      "post_map_values":{
+        "logtime":{
+          "map_date":{
+            "target_date_pattern":"yyyy-MM-dd HH:mm:ss,SSS"
+          }
+        }
+      }
+    },
+    {
+      "filter":"grok",
+      "conditions":{
+        "fields":{
+          "type":[
+            "bigsql_engine"
+          ]
+
+        }
+
+      },
+      "log4j_format":"",
+      "multiline_pattern":"^(%{DB_DATESTAMP:logtime})",
+      "message_pattern":"(?m)^%{DB_DATESTAMP:logtime}%{DATA}%{SPACE}LEVEL:%{SPACE}%{WORD:level}%{GREEDYDATA:log_message}",
+      "post_map_values":{
+        "logtime":{
+          "map_date":{
+            "target_date_pattern":"yyyy-MM-dd-HH.mm.ss"
+          }
+        },
+        "level":[
+          {
+            "map_fieldvalue":{
+              "pre_value":"Info",
+              "post_value":"INFO"
+            }
+          },
+          {
+            "map_fieldvalue":{
+              "pre_value":"Warning",
+              "post_value":"WARN"
+            }
+          },
+          {
+            "map_fieldvalue":{
+              "pre_value":"Event",
+              "post_value":"INFO"
+             }
+           },
+           {
+             "map_fieldvalue":{
+               "pre_value":"Error",
+               "post_value":"ERROR"
+             }
+           },
+           {
+             "map_fieldvalue":{
+               "pre_value":"Severe",
+               "post_value":"FATAL"
+             }
+           },
+           {
+             "map_fieldvalue":{
+               "pre_value":"Critical",
+               "post_value":"FATAL"
+             }
+           }
+         ]
+        
+      }
+    }
+  ]
+
+}

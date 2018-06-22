@@ -1,0 +1,146 @@
+ {
+   "service": {
+    "hdfs": {
+      "label": "HDFS",
+      "components": [
+        {
+          "name": "hdfs_namenode"
+        },
+        {
+          "name": "hdfs_datanode"
+        },
+        {
+          "name": "hdfs_secondarynamenode"
+        },
+        {
+          "name": "hdfs_journalnode"
+        },
+        {
+          "name": "hdfs_zkfc"
+        },
+        {
+          "name": "hdfs_nfs3"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+    "zookeeper": {
+      "label": "Zookeeper",
+      "components": [
+        {
+          "name": "zookeeper"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+    "mapreduce": {
+      "label": "MapReduce",
+      "components": [
+        {
+          "name": "mapred_historyserver"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+    "yarn": {
+      "label": "YARN",
+      "components": [
+        {
+          "name": "yarn_resourcemanager"
+        },
+        {
+          "name": "yarn_historyserver"
+        },
+        {
+          "name": "yarn_jobsummary"
+        },
+        {
+          "name": "yarn_nodemanager"
+        },
+        {
+          "name": "yarn_timelineserver"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+    "hbase": {
+      "label": "HBase",
+      "components": [
+        {
+          "name": "hbase_master"
+        },
+        {
+          "name": "hbase_regionserver"
+        },
+        {
+          "name": "hbase_phoenix_server"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+    "hive": {
+      "label": "Hive",
+      "components": [
+        {
+          "name": "hive_metastore"
+        },
+        {
+          "name": "hive_hiveserver2"
+        },
+        {
+          "name": "webhcat_server"
+        }
+      ],
+      "dependencies": [
+      ]
+    }
+     ,
+   "bigsql": {
+      "label": "Big SQL",
+      "components": [
+        {
+          "name": "bigsql_server"
+        },
+        {
+          "name": "bigsql_scheduler"
+        },
+        {
+          "name": "bigsql_engine"
+        }
+      ],
+      "dependencies": [
+	          {
+          "service": "hdfs",
+          "components": [
+            "hdfs_datanode"
+          ]
+        },
+        {
+          "service": "hbase",
+          "components": [
+            "hbase_master",
+            "hbase_regionserver"
+          ]
+        },
+        {
+          "service": "hive",
+          "components": [
+            "hive_hiveserver2",
+            "hive_metastore"
+          ]
+        }
+      ]
+    }
+    
+  }
+}
